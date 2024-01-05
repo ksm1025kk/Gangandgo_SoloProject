@@ -1,0 +1,195 @@
+@charset "UTF-8";
+@font-face {
+    font-family: 'Pretendard-Regular';
+    src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+
+*{
+	margin:0;
+	padding:0;
+	font-family: Pretendard-Regular;
+}
+
+@media screen and (min-width: 601px){
+	header{
+		position:fixed;
+		background-color: white;
+		width:100%;
+		height:80px;
+		top:0;
+		z-index : 100;
+		box-shadow: 0 4px 4px -4px black;
+		min-width: 500px;
+		
+		font-size:20px;
+		
+	}
+	
+	nav{
+		margin:0 auto;
+		display: flex;
+		flex-flow: row;
+		justify-content:space-around;
+		max-width:900px;
+		width: 100%;
+		height: 100%;
+		padding:0px 10px;
+		box-sizing: border-box;
+	}
+	
+	.logo_img{
+		display:inline;
+		width:120px;
+		margin-right: 50px;
+	}
+	
+	.hamburger{
+		display:none;
+	}
+	
+	.header_menu{
+		display:flex;
+		list-style: none;
+		align-items: center;
+		justify-content: space-between;
+      	width: 70%;
+      	height: 100%;
+	}
+	
+	ul.header_menu > li{
+		cursor:pointer;
+		font-weight: 600;
+	}
+	
+	ul.header_menu > li:nth-child(1) { 
+		margin-top: 0px;
+	}
+	
+	.nickname { 
+		position:relative;
+	}
+	
+	
+	.dropdown_content{
+		width:125px;
+		position:absolute;
+		top:35px;
+		left:50%;
+		transform: translate(-50%, 0%);
+		background-color:white;
+		border: 1px solid gray;
+		font-size: 16px;
+		display:none;
+	}
+	
+	
+	.dropdown_content div{
+		cursor:pointer;
+		width:auto;
+		display:block;
+		text-decoration: none;
+		padding:10px;
+	}
+	
+	.dropdown_content div:hover{
+		background-color: lightgray;
+	}
+}
+
+
+/*-----------------------------------------------------*/
+
+
+@media screen and (max-width: 600px){
+	header{
+		position:fixed;
+		background-color: white;
+		width:100%;
+		height:80px;
+		top:0;
+		z-index : 100;
+		box-shadow: 0 4px 4px -4px black;
+		min-width: 375px;
+	}
+	
+	nav{
+		width: 100%;
+		height: 100%;
+	}
+	
+	
+	.logo_img{
+		display:inline;
+		width:120px;
+		margin-left: 10px;
+	}
+	
+	.hamburger{
+		width: 50px;
+		float:right;
+		margin:15px 10px 0px 0px;
+		cursor: pointer;
+	}
+	
+	.header_menu{
+		margin:-4px auto 0;
+		display:none;
+		list-style: none;
+		align-items: center;
+      	flex-flow:column;
+      	width: 100%;
+      	height: 205px;
+      	background-color: white;
+      	z-index : 99;
+      	box-shadow: 0 4px 4px -4px black;
+	}
+	
+	
+	ul.header_menu > li{
+		cursor:pointer;
+		font-size:16px;
+		font-weight: 600;
+		padding:10px 0;
+		width: 100%;
+		text-align: center;
+	}
+	
+	ul.header_menu > li:hover{
+		background-color: lightgray;
+	}
+	
+	.nickname { 
+		position:relative;
+	}
+	
+	
+	.dropdown_content{
+		display:none;
+		width:auto;
+		position:absolute;
+		top:0px;
+    	left:69%;
+    	transform: translate(0%,0%);
+		background-color:white;
+		border: 1px solid black;
+		
+	}
+	
+	
+	.dropdown_content div{
+		cursor:pointer;
+		width:auto;
+		display:block;
+		text-decoration: none;
+		padding:7px;
+		font-weight: 400;
+	}
+	
+	.dropdown_content div:hover{
+		background-color: lightgray;
+	}
+}
+
+

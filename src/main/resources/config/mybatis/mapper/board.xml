@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="b">
+	<select id="countBoard" resultType="int">
+		SELECT COUNT(*) FROM "BOARD" WHERE B_STATUS=1
+	</select>
+	
+	<!-- 게시물 전체 조회 -->
+	<select id="board_list" resultType="vo.BoardVO" parameterType="vo.PagingVO">
+		SELECT * FROM (
+				 SELECT ROWNUM RN, A.* FROM (
+												SELECT B.B_IDX,
+												B.M_IDX,
+												B.B_TITLE ,
+												B.B_CONTENT ,
+												B.B_POSTDATE ,
+												B.B_THUMBUP ,
+												B.B_READHIT ,
+												(SELECT I_IMG FROM (SELECT * FROM "IMAGE" ORDER BY I_IDX ASC) I WHERE B.B_IDX=I.B_IDX AND ROWNUM = 1) B_IMG,
+												B.B_CATEGORY,
+												B.B_REPLY_COUNT,
+												M.M_NICKNAME
+												FROM "BOARD" B INNER JOIN "MEMBER" M ON B.M_IDX = M.M_IDX 
+												WHERE B_STATUS =1
+												ORDER BY ${orderby} DESC ) A
+											)
+									   WHERE RN BETWEEN #{start} AND #{end}
+	</select>
+	
+	<!-- 해당 멤버 idx로 게시물 전체 조회 -->
+	<select id="selectList_by_m_idx" resultType="vo.BoardVO" parameterType="int">
+		SELECT B.B_IDX,
+		B.M_IDX,
+		B.B_TITLE ,
+		B.B_CONTENT ,
+		B.B_POSTDATE ,
+		B.B_THUMBUP ,
+		B.B_READHIT ,
+		(SELECT I_IMG FROM "IMAGE" I WHERE B.B_IDX=I.B_IDX AND ROWNUM=1) B_IMG,
+		B.B_CATEGORY,
+		B.B_REPLY_COUNT,
+		M.M_NICKNAME
+		FROM "BOARD" B INNER JOIN "MEMBER" M ON B.M_IDX = M.M_IDX
+		WHERE M.M_IDX=#{m_idx} AND B_STATUS =1
+		ORDER BY B_IDX
+		DESC
+	</select>
+
+	<!-- 게시물 작성 -->
+	<insert id="board_insert" parameterType="vo.BoardVO">
+		INSERT INTO "BOARD"
+		VALUES(SEQ_B_IDX.NEXTVAL, #{m_idx}, #{b_title}, #{b_content}, SYSDATE,
+		0,0,#{b_category},0,1)
+	</insert>
+	
+	<!-- 방금 쓴게시글 1개 m_idx로 b_idx조회 -->
+	<select id="board_selectOne_by_m_idx" parameterType="int" resultType="int">
+		SELECT B_IDX FROM "BOARD" WHERE ROWNUM=1 AND M_IDX=#{m_idx} ORDER BY B_IDX DESC
+	</select>
+	
+	<!-- 게시물에 이미지 이미지테이블에 추가 -->
+	<insert id="image_insert" parameterType="vo.ImageVO">
+		INSERT INTO "IMAGE" VALUES(SEQ_I_IDX.NEXTVAL, #{b_idx}, #{i_img})
+	</insert>
+	
+	<!-- view들어갈때 게시글 한개 조회 -->
+	<select id="board_selectOne" parameterType="int"
+		resultType="vo.BoardVO">
+		SELECT B.B_IDX,
+		B.M_IDX,
+		B.B_TITLE ,
+		B.B_CONTENT ,
+		B.B_POSTDATE ,
+		B.B_THUMBUP ,
+		B.B_READHIT ,
+		B.B_CATEGORY,
+		B.B_REPLY_COUNT,
+		B.B_STATUS,
+		M.M_NICKNAME
+		FROM "BOARD" B INNER JOIN "MEMBER" M ON B.M_IDX = M.M_IDX
+		WHERE B_IDX = #{b_idx}
+	</select>
+	
+	<!-- b_idx로 이미지 전체 조회 -->
+	<select id="img_selectList" parameterType="int" resultType="vo.ImageVO">
+		SELECT * FROM "IMAGE" WHERE B_IDX=#{b_idx} ORDER BY I_IDX ASC
+	</select>
+
+	<!-- 조회수 증가 -->
+	<update id="update_readhit" parameterType="int">
+		UPDATE "BOARD" SET B_READHIT=B_READHIT+1 WHERE B_IDX=#{b_idx}
+	</update>
+
+	<!-- 글 삭제 -->
+	<update id="board_delete" parameterType="int">
+		UPDATE "BOARD" SET B_STATUS=0 WHERE B_IDX=#{b_idx}
+	</update>
+
+	<!-- 이미지삭제 -->
+	<delete id="board_modify_image_delete" parameterType="int">
+		DELETE FROM "IMAGE" WHERE I_IDX=#{i_idx}
+	</delete>
+
+	<!-- 게시글 수정 -->
+	<update id="board_update" parameterType="vo.BoardVO">
+		UPDATE "BOARD" SET
+		B_TITLE=#{b_title},
+		B_CONTENT=#{b_content},
+		B_POSTDATE=SYSDATE,
+		B_CATEGORY=#{b_category}
+		WHERE B_IDX=#{b_idx}
+	</update>
+	
+	<!-- 게시글 좋아요 증가 -->
+	<update id="board_thumbup_update" parameterType="int">
+		UPDATE "BOARD" SET B_THUMBUP = B_THUMBUP + 1 WHERE B_IDX = #{b_idx}
+	</update>
+	
+	<!-- 게시글 좋아요 누를때 이미 눌렀는지 체크 -->
+	<select id="thumbup_check" parameterType="java.util.HashMap" resultType="int">
+		SELECT COUNT(*) FROM "THUMBUP" WHERE M_IDX = #{m_idx} AND B_IDX = #{b_idx}
+	</select>
+	
+	<!-- 해당 글 좋아요 누른 멤버 추가 -->
+	<insert id="member_thumbup_insert" parameterType="java.util.HashMap">
+		INSERT INTO "THUMBUP" VALUES(#{m_idx}, #{b_idx})
+	</insert>
+	
+	<!-- 제목이 비슷한 게시물 총 갯수 조회 -->
+	<select id="countBoard_b_title" resultType="int" parameterType="String">
+		SELECT COUNT(*) FROM "BOARD" WHERE B_TITLE LIKE '%'||#{keyword}||'%' AND B_STATUS=1
+	</select>
+	
+	<!-- 내용이 비슷한 게시물 총 갯수 조회 -->
+	<select id="countBoard_b_content" resultType="int" parameterType="String">
+		SELECT COUNT(*) FROM "BOARD" WHERE B_CONTENT LIKE '%'||#{keyword}||'%' AND B_STATUS=1
+	</select>
+	
+	<!-- 작성자이 비슷한 게시물 총 갯수 조회 -->
+	<select id="countBoard_b_nickname" resultType="int" parameterType="String">
+		SELECT COUNT(*) FROM "BOARD" B INNER JOIN "MEMBER" M ON B.M_IDX = M.M_IDX
+									WHERE M.M_IDX IN (SELECT M_IDX FROM "MEMBER" WHERE M_NICKNAME LIKE '%'||#{keyword}||'%') AND B_STATUS=1
+	</select>
+	
+	<!-- 제목으로 검색 -->
+	<select id="selectList_search_by_title" resultType="vo.BoardVO" parameterType="vo.PagingVO">
+	
+		SELECT *FROM (SELECT ROWNUM RN, A.* FROM 
+												(SELECT B.B_IDX,
+												 B.M_IDX,
+												 B.B_TITLE ,
+												 B.B_CONTENT ,
+												 B.B_POSTDATE ,
+												 B.B_THUMBUP ,
+												 B.B_READHIT ,
+												 (SELECT I_IMG FROM "IMAGE" I WHERE B.B_IDX=I.B_IDX AND ROWNUM=1) B_IMG,
+												 B.B_CATEGORY,
+												 B.B_REPLY_COUNT,
+												 M.M_NICKNAME
+												 FROM "BOARD" B INNER JOIN "MEMBER" M ON B.M_IDX = M.M_IDX
+												 WHERE B_TITLE LIKE '%'||#{keyword}||'%' AND B_STATUS=1
+												 ORDER BY ${orderby}
+												 DESC ) A
+												)
+												WHERE RN BETWEEN #{start} AND #{end}
+		
+	</select>
+	
+	<!-- 내용으로 검색 -->
+	<select id="b_selectList_search_by_content" resultType="vo.BoardVO" parameterType="vo.PagingVO">
+	
+		SELECT *
+			
+				FROM (
+				SELECT ROWNUM RN, A.* FROM (
+												SELECT B.B_IDX,
+												B.M_IDX,
+												B.B_TITLE ,
+												B.B_CONTENT ,
+												B.B_POSTDATE ,
+												B.B_THUMBUP ,
+												B.B_READHIT ,
+												(SELECT I_IMG FROM "IMAGE" I WHERE B.B_IDX=I.B_IDX AND ROWNUM=1) B_IMG,
+												B.B_CATEGORY,
+												B.B_REPLY_COUNT,
+												M.M_NICKNAME
+												FROM "BOARD" B INNER JOIN "MEMBER" M ON B.M_IDX = M.M_IDX
+												WHERE B_CONTENT LIKE '%'||#{keyword}||'%' AND B_STATUS=1
+												ORDER BY ${orderby}
+												DESC ) A
+						)
+		WHERE RN BETWEEN #{start} AND #{end}
+		
+	</select>
+	
+	<!-- 닉네임으로 검색 -->
+	<select id="selectList_b_nickname" resultType="vo.BoardVO" parameterType="vo.PagingVO">
+	
+	
+		SELECT *
+			
+				FROM (
+				SELECT ROWNUM RN, A.* FROM (
+												SELECT B.B_IDX,
+												B.M_IDX,
+												B.B_TITLE ,
+												B.B_CONTENT ,
+												B.B_POSTDATE ,
+												B.B_THUMBUP ,
+												B.B_READHIT ,
+												(SELECT I_IMG FROM "IMAGE" I WHERE B.B_IDX=I.B_IDX AND ROWNUM=1) B_IMG,
+												B.B_CATEGORY,
+												B.B_REPLY_COUNT,
+												M.M_NICKNAME
+												FROM "BOARD" B INNER JOIN "MEMBER" M ON B.M_IDX = M.M_IDX
+												WHERE M.M_IDX IN (SELECT M_IDX FROM "MEMBER" WHERE M_NICKNAME LIKE '%'||#{keyword}||'%') AND B_STATUS=1
+												ORDER BY ${orderby}
+												DESC ) A
+				)
+		WHERE RN BETWEEN #{start} AND #{end}
+		
+	</select>
+	
+	<!-- 게시글 지울때 연관된 좋아요 삭제 -->
+	<delete id="board_thumbup_delete" parameterType="int">
+		DELETE FROM "THUMBUP" WHERE B_IDX = #{b_idx}
+	</delete>
+	
+	<!-- 댓글 작성시 댓글수 증가 -->
+	<update id="reply_count_increase" parameterType="int">
+		UPDATE "BOARD" SET B_REPLY_COUNT = B_REPLY_COUNT+1 WHERE B_IDX=#{b_idx}
+	</update>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

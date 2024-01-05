@@ -1,0 +1,115 @@
+@charset "UTF-8";
+* {
+	margin: 0;
+	padding: 0;
+}
+
+main{
+	padding : 0px 10px;
+	box-sizing :border-box;
+  	text-align : center;
+	width: 100%;
+	max-width: 900px;
+	margin: 150px auto 0;
+	min-width: 375px;
+	justify-content: center;
+}
+
+.item{
+	display: flex;
+}
+
+.menu_title{
+	display:flex; /* 옆으로정렬됨 */ 
+	justify-content: center;
+	text-align : center;
+	margin-top: 10px;
+	font-size: 22px;
+	box-sizing: border-box;
+}
+
+
+.content-container {
+	width:100%;
+ 	margin: 20px auto;
+ 	padding:15px;
+ 	border-radius: 20px;
+ 	box-shadow: 0px 0px 5px #444;
+}
+.o_idx{
+	font-size: 18px;
+	margin-bottom: 10px;
+}
+
+.order_container{
+	display:flex;
+}
+
+
+.order_info{
+	font-size:22px;
+	margin-left: 20px;
+	align-items: center;
+}
+
+.content {
+    
+    font-size: 14px;
+    text-align: left;
+	vertical-align: middle;
+ 	justify-content: center;
+}
+
+.total_price{
+	margin-bottom: 20px;
+	font-size: 20px;
+}
+
+.cart_delete{
+	width: 100px;
+    border: 1px solid gray;
+    border-radius:5px;
+    height: 30px;
+    box-sizing: border-box;
+    vertical-align: middle;
+    padding:3.5px;
+    cursor:pointer;
+    font-size: 16px;
+    background-color: #FFFF7E;
+}
+.cart_delete:hover{
+	box-shadow: 0 0 10px gray;
+}
+.payment{
+	width: 200px;
+    border: 1px solid gray;
+    border-radius:5px;
+    height: 30px;
+    box-sizing: border-box;
+    vertical-align: middle;
+    padding:3.5px;
+    cursor:pointer;
+    font-size: 16px;
+    background-color: #FFFF7E;
+}
+.payment:hover{
+	box-shadow: 0 0 10px gray;
+}
+.go_to_shoppinglist{
+	width: 150px;
+    border: 1px solid gray;
+    border-radius:5px;
+    height: 30px;
+    box-sizing: border-box;
+    vertical-align: middle;
+    padding:3.5px;
+    cursor:pointer;
+    font-size: 16px;
+    background-color: #FFFF7E;
+}
+.go_to_shoppinglist:hover{
+	box-shadow: 0 0 10px gray;
+}
+.empty_cart{
+	margin-bottom: 20px;
+}

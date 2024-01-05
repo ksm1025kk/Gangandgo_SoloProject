@@ -1,0 +1,88 @@
+@charset "UTF-8";
+* {
+	margin: 0;
+	padding: 0;
+}
+
+main{
+	padding : 0px 10px;
+	box-sizing :border-box;
+  	text-align : center;
+	width: 100%;
+	max-width: 900px;
+	margin: 150px auto 0;
+	min-width: 375px;
+	justify-content: center;
+}
+
+.item{
+	display: flex;
+}
+
+.menu_title{
+	display:flex; /* 옆으로정렬됨 */ 
+	justify-content: center;
+	text-align : center;
+	margin-top: 10px;
+	font-size: 22px;
+}
+
+
+.content-container {
+	width:100%;
+ 	margin: 20px auto;
+ 	padding:15px;
+ 	border-radius: 20px;
+ 	box-shadow: 0px 0px 5px #444;
+}
+.o_idx{
+	font-size: 18px;
+	margin-bottom: 10px;
+}
+
+.order_container{
+	display:flex;
+}
+
+
+.order_info{
+	font-size:22px;
+	margin-left: 20px;
+	align-items: center;
+}
+
+.content {
+    
+    font-size: 14px;
+    text-align: left;
+	vertical-align: middle;
+ 	justify-content: center;
+}
+
+.order_view_button{
+	padding: 10px 20px;
+	font-size: 16px;
+	font-weight: bold;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+	margin-top:20px;
+	width:100%;
+}
+.order_view_button:hover {
+ 	background-color: gray;
+}
+
+.back{
+	border: 1px solid gray;
+	border-radius:5px;
+	display:inline;
+	height: 40px;
+	width : 170px;
+	box-sizing: border-box;
+	vertical-align: middle;
+	padding:6px;
+	cursor:pointer;
+	font-size: 15px;
+}

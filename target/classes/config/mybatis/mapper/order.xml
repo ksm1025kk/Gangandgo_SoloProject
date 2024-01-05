@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="o">	
+	<insert id="order_insert" parameterType="vo.OrderVO">
+		INSERT INTO "ORDER" VALUES(SEQ_O_IDX.NEXTVAL, #{m_idx},#{p_idx},SYSDATE, #{o_addr},0,#{o_count})
+	</insert>
+	
+	
+	<select id="selectList" parameterType="int" resultType="vo.OrderVO">
+		SELECT O.O_IDX,
+		  	   O.M_IDX,
+		  	   O.P_IDX,
+		  	   O.O_DATE,
+		  	   O.O_ADDR,
+		  	   O.O_DELIVERED,
+		  	   O.O_COUNT,	
+			   P.P_NAME,
+			   P.P_IMG
+			   FROM "ORDER" O INNER JOIN "PRODUCT" P ON O.P_IDX = P.P_IDX 
+			   WHERE M_IDX=#{m_idx} ORDER BY O_IDX DESC
+	</select>
+	
+	
+	<select id="order_selectOne" parameterType="int" resultType="int">
+		SELECT O_IDX FROM (SELECT * FROM "ORDER" WHERE M_IDX = #{m_idx} ORDER BY O_IDX DESC) WHERE ROWNUM=1
+	</select>
+	
+	<insert id="od_insert" parameterType="vo.OrderdetailVO">
+		INSERT INTO "ORDERDETAIL" VALUES(SEQ_OD_IDX.NEXTVAL, #{o_idx}, #{p_idx}, (SELECT P_PRICE FROM "PRODUCT" WHERE P_IDX = #{p_idx}), #{od_count}, 0)
+	</insert>
+	
+	<select id="od_selectList" resultType="vo.OrderdetailVO" parameterType="int">
+        SELECT OD.OD_IDX, OD.O_IDX, OD.P_IDX, OD.OD_PRICE, OD.OD_COUNT, OD.OD_REVIEW_CHECK , P.P_NAME ,P.P_IMG FROM "ORDERDETAIL" OD INNER JOIN "PRODUCT" P ON OD.P_IDX = P.P_IDX WHERE O_IDX = #{o_idx}
+    </select>
+    
+    <!-- 재고량삭제 -->
+	<update id="decreaseProductStock" parameterType="java.util.HashMap">
+		UPDATE product
+		SET p_amount = p_amount - #{quantity}
+		WHERE p_idx = #{p_idx}
+	</update>
+	
+	<!-- 리뷰 작성 폼 들어갈때 od 한개 가져오기 -->
+    <select id="od_selectOne" resultType="vo.OrderdetailVO" parameterType="int">
+    	SELECT OD.OD_IDX, OD.O_IDX, OD.P_IDX, OD.OD_PRICE, OD.OD_COUNT, OD.OD_REVIEW_CHECK, P.P_NAME, P.P_IMG FROM "ORDERDETAIL" OD INNER JOIN "PRODUCT" P ON OD.P_IDX = P.P_IDX WHERE OD_IDX = #{od_idx} 
+    </select>
+    
+    <!-- 리뷰 삭정 후 review check 1로 업데이트 -->
+    <update id="review_check_update" parameterType="int">
+    	UPDATE "ORDERDETAIL" SET OD_REVIEW_CHECK = 1 WHERE OD_IDX = #{od_idx}
+    </update>
+    
+</mapper>

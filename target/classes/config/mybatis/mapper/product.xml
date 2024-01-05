@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="p">
+	<select id="product_list" resultType="vo.ProductVO">
+		SELECT * FROM "PRODUCT" WHERE P_PETTYPE=#{p_pettype} AND P_CATEGORY=#{p_category} AND P_STATUS=1
+		ORDER BY ${orderby} DESC
+	</select>
+	
+	<select id="product_list_orderby_asc" resultType="vo.ProductVO">
+		SELECT * FROM "PRODUCT" WHERE P_PETTYPE=#{p_pettype} AND P_CATEGORY=#{p_category} AND P_STATUS=1
+		ORDER BY P_PRICE ASC
+	</select>
+	
+	<insert id="product_insert" parameterType="vo.ProductVO">
+		INSERT INTO "PRODUCT"
+		VALUES(SEQ_P_IDX.NEXTVAL,
+				 #{p_name}, 
+				 #{p_price}, 
+				 #{p_img}, 
+				 #{p_info}, 
+				 #{p_amount},
+				 #{p_pettype},
+				 #{p_category},
+				 0,
+				 0,
+				 1
+				 ) 
+		
+	</insert>
+	
+	<select id="product_selectOne" parameterType="int" resultType="vo.ProductVO">
+		SELECT * FROM "PRODUCT" WHERE P_IDX = #{p_idx}
+	</select>
+	
+	<select id="product_search_name_list" resultType="vo.ProductVO" parameterType="String">
+		SELECT * FROM "PRODUCT" WHERE P_NAME LIKE '%'||#{p_name}||'%'
+	</select>
+	
+	<select id="product_search_info_list" resultType="vo.ProductVO" parameterType="String">
+		SELECT * FROM "PRODUCT" WHERE P_INFO LIKE '%'||#{p_info}||'%'
+	</select>
+	
+	<!-- 상품삭제(status 변경) -->
+	<update id="delete_product" parameterType="int">
+		UPDATE "PRODUCT" SET P_STATUS = 0 WHERE P_IDX = #{p_idx}
+	</update>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

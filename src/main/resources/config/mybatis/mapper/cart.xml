@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="c">
+
+	<!-- 장바구니 조회 -->
+	<select id="selectList" resultType="vo.CartVO" parameterType="int">
+		SELECT C.C_IDX, C.M_IDX, C.P_IDX, C.C_COUNT, P.P_PRICE, P.P_IMG, P.P_NAME
+		FROM "CART" C INNER JOIN "PRODUCT" P 
+		ON P.P_IDX = C.P_IDX
+		WHERE C.M_IDX=#{m_idx}
+		ORDER BY C_IDX ASC
+	</select>
+	
+	<!-- 장바구니 중복체크 (같은상품이 있는지)
+	<select id="cart_check" resultType="int" parameterType="vo.CartVO">
+		SELECT COUNT(*) FROM "CART" WHERE P_IDX=#{p_idx} AND M_IDX=#{m_idx} 
+	</select>-->
+	
+	<!-- 장바구니 담기 했을 때 중복이 없으면 바로 추가 -->
+	<insert id="cart_insert" parameterType="vo.CartVO">
+		INSERT INTO "CART" VALUES(
+		SEQ_C_IDX.NEXTVAL,
+		#{m_idx},
+		#{p_idx},
+		#{c_count}
+		)
+	</insert>
+
+	<!-- 장바구니 담기 했을때 중복이면 추가하지말고 업데이트 -->
+	<update id="cart_update" parameterType="vo.CartVO">
+		UPDATE "CART" SET C_COUNT = C_COUNT + #{c_count}
+						WHERE P_IDX = #{p_idx} AND M_IDX = #{m_idx}
+	</update>
+
+
+	<!-- 장바구니삭제 -->
+	<delete id="cart_delete" parameterType="int">
+		DELETE FROM "CART" WHERE C_IDX=#{c_idx}
+	</delete>
+	
+	
+	<!-- 바로결제 / p_idx로 cartVO 한개 조회하기-->
+	
+	<select id="selectOne_by_p_idx" parameterType="int" resultType="vo.CartVO">
+		SELECT C.C_IDX, C.M_IDX, C.P_IDX, C.C_COUNT, P.P_PRICE
+		FROM "CART" C INNER JOIN "PRODUCT" P 
+		ON P.P_IDX = C.P_IDX
+		WHERE C.P_IDX = #{p_idx}
+	</select> 
+
+	<!-- 바로결제 / c_idx로 cartVO 한개 조회하기 -->
+	<select id="selectOne_by_c_idx" parameterType="int" resultType="vo.CartVO">
+		SELECT C.C_IDX, C.M_IDX, C.P_IDX, C.C_COUNT, P.P_PRICE
+		FROM "CART" C INNER JOIN "PRODUCT" P 
+		ON P.P_IDX = C.P_IDX
+		WHERE C.C_IDX = #{c_idx}
+	</select>
+	
+	<delete id="purchased_cart_delete" parameterType="vo.CartVO">
+		DELETE FROM "CART" WHERE C_IDX = #{c_idx}
+	</delete>
+	
+	<update id="purchased_cart_update" parameterType="vo.CartVO">
+		UPDATE "CART" SET C_COUNT = C_COUNT - #{c_count} WHERE C_IDX = #{c_idx}
+	</update>
+</mapper>

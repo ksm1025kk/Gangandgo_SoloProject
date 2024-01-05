@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="m">
+
+	<select id="member_list" resultType="vo.MemberVO">
+		select * from "MEMBER" order
+		by m_idx
+	</select>
+
+	<!-- 회원 가입 -->
+	<insert id="member_insert" parameterType="vo.MemberVO">
+		INSERT INTO "MEMBER"
+		VALUES(
+		SEQ_M_IDX.NEXTVAL,
+		#{m_email},
+		#{m_pwd},
+		#{m_nickname},
+		0,
+		SYSDATE,
+		null,
+		null,
+		null,
+		1,
+		null
+		)
+	</insert>
+
+	<!-- 회원 가입 시 email 중복 여부 체크 -->
+	<select id="email_check" resultType="int" parameterType="String">
+		select
+		count(*) from "MEMBER" where m_email=#{m_email}
+	</select>
+
+	<!-- 로그인 시 email 존재하면 MemberVO 반환 -->
+	<select id="email_exist_check" resultType="vo.MemberVO"
+		parameterType="String">
+		SELECT * FROM "MEMBER" WHERE m_email=#{m_email}
+	</select>
+
+	<!-- 비밀번호를 새 비밀번호로 수정 -->
+	<select id="newpwd_update" parameterType="vo.MemberVO">
+		UPDATE "MEMBER" SET m_pwd=#{m_pwd} WHERE M_EMAIL = #{m_email}
+	</select>
+
+	<!-- 회원 정보 수정 시 닉네임 중복체크 -->
+	<select id="nickname_check" resultType="int"
+		parameterType="String">
+		select count(*) from "MEMBER" where
+		m_nickname=#{m_nickname}
+	</select>
+
+	<!-- 회원정보 수정 -->
+	<update id="member_info_modify" parameterType="vo.MemberVO">
+		UPDATE "MEMBER" SET M_NICKNAME = #{m_nickname},
+		M_PWD=#{m_pwd},
+		M_TEL=#{m_tel}
+		WHERE M_IDX = #{m_idx}
+	</update>
+
+	<!-- 멤버 뷰용 idx로 vo 한개 조회 -->
+	<select id="member_selectOne" parameterType="int"
+		resultType="vo.MemberVO">
+		SELECT * FROM "MEMBER" WHERE M_IDX = #{m_idx}
+	</select>
+
+	<!-- 회원 탈퇴 -->
+	<select id="delete_membership" parameterType="int">
+		UPDATE "MEMBER" SET
+		M_NICKNAME = 'UNKNOWN', M_STATUS = 0
+		WHERE M_IDX = #{m_idx}
+	</select>
+	
+	<!-- 배송지 수정 12/11 수정 -->
+	<update id="member_addr_modify" parameterType="vo.MemberVO">
+		UPDATE "MEMBER" SET M_ADDR1=#{m_addr1}, M_ADDR2=#{m_addr2}, M_ADDR3=#{m_addr3}
+		WHERE M_IDX = #{m_idx}
+	</update>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

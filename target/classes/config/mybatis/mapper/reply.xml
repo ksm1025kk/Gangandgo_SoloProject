@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="r">
+<!-- 해당 게시물의 총 댓글갯수 -->
+<select id="countReply" resultType="int" parameterType="int">
+	SELECT COUNT(*) FROM "REPLY" WHERE B_IDX=#{b_idx}
+</select>
+
+
+
+<!-- 댓글 작성 -->
+<insert id="reply_insert" parameterType="vo.ReplyVO">
+		INSERT INTO "REPLY" VALUES(SEQ_R_IDX.NEXTVAL,
+								   #{b_idx}, #{m_idx},
+								   #{r_content},
+								   SYSDATE,
+								   0,
+								   SEQ_R_IDX.CURRVAL,
+								   0,
+								   0,
+								   0,
+								   0,
+								   1
+								   )
+</insert>
+
+<!-- 대댓글 작성 -->
+<insert id="reply_reply_insert" parameterType="vo.ReplyVO">
+		INSERT INTO "REPLY" VALUES(SEQ_R_IDX.NEXTVAL,
+								   #{b_idx}, #{m_idx},
+								   #{r_content},
+								   SYSDATE,
+								   0,
+								   #{r_ref},
+								   #{r_step},
+								   #{r_depth},
+								   0,
+								   #{r_parent_idx},
+								   1
+								   )
+</insert>
+
+<!-- 게시글 댓글 전체 조회 -->
+<select id="reply_list" resultType="vo.ReplyVO" parameterType="vo.PagingVO">
+	
+	SELECT * FROM (
+					SELECT ROWNUM RN, A.* FROM (SELECT
+												R.R_IDX,
+												R.B_IDX,
+												R.M_IDX,
+												R.R_CONTENT,
+												R.R_POSTDATE,
+												R.R_THUMBUP,
+												R.R_REF,
+												R.R_STEP,
+												R.R_DEPTH,
+												R.R_STATUS,
+												M.M_NICKNAME
+												FROM "REPLY" R INNER JOIN "MEMBER" M ON R.M_IDX=M.M_IDX
+												WHERE B_IDX=#{b_idx}
+												ORDER BY R_REF , DECODE(R_DEPTH,0,1), R_STEP ) A
+					)
+	WHERE RN BETWEEN #{start} AND #{end}
+	
+	
+</select>
+
+<!-- 게시글 삭제히 해당 글 댓글 전체 삭제 -->
+<update id="board_reply_delete" parameterType="int">
+	UPDATE "REPLY" SET R_STATUS = 0 WHERE B_IDX = #{b_idx}
+</update>
+
+<!-- 댓글 한개 삭제 (삭제 업데이트) -->
+<update id="reply_delete" parameterType="int">
+	UPDATE "REPLY" SET R_STATUS = 0 WHERE R_IDX = #{r_idx}
+</update>
+
+<!-- 원본 참조 댓글 조회 -->
+<select id="selectOne" resultType="vo.ReplyVO" parameterType="int">
+	SELECT * FROM "REPLY" WHERE R_IDX = #{r_idx}
+</select>
+
+<update id="reply_step_update" parameterType="vo.ReplyVO">
+	UPDATE "REPLY" SET R_STEP = R_STEP + 1 WHERE R_REF = #{r_ref} and R_STEP > #{r_step}
+</update>
+
+<select id="maxStep" parameterType="int" resultType="int">
+	SELECT MAX(R_STEP) + 1 FROM "REPLY" WHERE R_REF = #{r_ref}
+</select>
+
+<update id="updateStep" parameterType="vo.ReplyVO">
+	UPDATE "REPLY" SET R_STEP = R_STEP + 1 WHERE R_REF = #{r_ref} AND R_STEP >= #{r_step}
+</update>
+
+<!-- 멤버 idx로 댓글 전체 조회 -->
+<select id="selectList_by_m_idx" parameterType="int" resultType="vo.ReplyVO">
+	SELECT * FROM "REPLY" WHERE M_IDX = #{m_idx} AND R_STATUS = 1 ORDER BY R_IDX DESC
+</select>
+
+<!-- 부모댓글의 자식댓글 수 조회 -->
+<update id="updateNested" parameterType="vo.ReplyVO">
+	UPDATE "REPLY" SET R_NESTED = R_NESTED + 1 WHERE R_IDX = #{r_parent_idx}
+</update>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

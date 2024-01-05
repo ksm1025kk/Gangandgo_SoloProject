@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="a">
+	<insert id="answer_insert" parameterType="vo.AnswerVO">
+		INSERT INTO "ANSWER" VALUES(SEQ_A_IDX.NEXTVAL,
+									#{h_idx},
+									#{a_content}
+									)
+	
+	</insert>
+	
+	<select id="answer_selectOne" parameterType="int" resultType="vo.AnswerVO">
+		SELECT * FROM "ANSWER"
+		WHERE H_IDX=#{h_idx}
+	</select>
+	
+	<delete id="answer_delete" parameterType="int">
+		DELETE  FROM "ANSWER" WHERE A_IDX=#{a_idx}
+	</delete>
+		
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

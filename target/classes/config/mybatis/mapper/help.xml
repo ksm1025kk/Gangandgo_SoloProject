@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="h">
+	<insert id="help_insert" parameterType="vo.HelpVO">
+		INSERT INTO "HELP" VALUES(SEQ_H_IDX.NEXTVAL,
+									#{m_idx},
+									#{h_type},
+									#{h_content},
+									0)
+	
+	</insert>
+	
+	<!-- h_solved값으로 문의 갯수조회 -->
+	<select id="count_help" parameterType="int" resultType="int">
+		SELECT COUNT(*) FROM "HELP" WHERE H_SOLVED=#{h_solved}
+	</select>
+	
+	
+	<!-- 모든 문의 리스트 조회  -->
+	<select id="help_all_list" resultType="vo.HelpVO" parameterType="vo.PagingVO">
+	
+	SELECT * FROM (
+				 SELECT ROWNUM RN, A.* FROM (SELECT H.H_IDX,
+												H.M_IDX,
+												H.H_TYPE,
+												H.H_CONTENT,
+												H.H_SOLVED,
+												M.M_NICKNAME
+												FROM "HELP" H INNER JOIN "MEMBER" M ON H.M_IDX = M.M_IDX
+												WHERE H_SOLVED=#{h_solved}
+												ORDER BY H_IDX DESC ) A
+											)
+				 WHERE RN BETWEEN #{start} AND #{end}
+	</select>
+	
+	<!-- 회원 한명 문의 리스트 조회 -->
+	<select id="help_member_list" resultType="vo.HelpVO" parameterType="int">
+		SELECT * FROM "HELP"
+		WHERE M_IDX=#{m_idx}
+		ORDER BY H_IDX DESC
+	</select>
+	
+	<select id="help_selectOne" parameterType="int" resultType="vo.HelpVO">
+		SELECT H.H_IDX,
+		H.M_IDX,
+		H.H_TYPE,
+		H.H_CONTENT,
+		H.H_SOLVED,
+		M.M_NICKNAME
+		FROM "HELP" H INNER JOIN "MEMBER" M ON H.M_IDX = M.M_IDX
+		WHERE H_IDX=#{h_idx}
+	</select>
+	
+	<!-- 답변 달렸을때 h_solved 1로 update -->
+	<update id="solved_update" parameterType="int">
+		UPDATE "HELP" SET H_SOLVED=1 WHERE H_IDX=#{h_idx}
+	</update>
+	
+	
+	<update id="answer_delete_solved_update" parameterType="int">
+		UPDATE "HELP" SET H_SOLVED=0 WHERE H_IDX=#{h_idx}
+	</update>
+		
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="rv">
+	<insert id="review_insert" parameterType="vo.ReviewVO">
+		INSERT INTO "REVIEW" VALUES(
+			SEQ_RV_IDX.NEXTVAL,
+			#{m_idx},
+			#{od_idx},
+			#{rv_content},
+			SYSDATE,
+			#{rv_score},
+			#{rv_img}
+		)
+		
+	</insert>
+	<select id="review_selectList" parameterType="vo.PagingVO" resultType="vo.ReviewVO">
+		
+		SELECT * FROM ( SELECT ROWNUM RN, A.* FROM 
+													(SELECT RV.RV_IDX, RV.M_IDX, RV.OD_IDX, RV.RV_CONTENT, RV.RV_POSTDATE, RV.RV_SCORE, RV.RV_IMG, M.M_NICKNAME 
+														FROM "REVIEW" RV INNER JOIN "MEMBER" M ON RV.M_IDX = M.M_IDX 
+														WHERE OD_IDX IN(SELECT OD_IDX FROM "ORDERDETAIL" WHERE P_IDX = #{p_idx}) 
+														ORDER BY RV_IDX DESC ) A 
+						)
+					 WHERE RN BETWEEN #{start} AND #{end}
+	</select>	
+	
+	<select id="count_review" parameterType="int" resultType="int">
+		SELECT COUNT(*) FROM "REVIEW" RV INNER JOIN "MEMBER" M ON RV.M_IDX = M.M_IDX 
+														WHERE OD_IDX IN(SELECT OD_IDX FROM "ORDERDETAIL" WHERE P_IDX = #{p_idx})
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

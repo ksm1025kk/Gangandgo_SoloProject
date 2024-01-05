@@ -1,0 +1,37 @@
+@charset "UTF-8";
+
+.search_section{
+	margin:20px auto;
+}
+
+.search_form{
+	display: flex;
+	width:auto;
+	justify-content: center;
+}
+
+.type{
+	border:1px solid gray;
+	border-right:none;
+	border-radius:15px 0px 0px 15px;
+	height:30px;
+	box-sizing: border-box;
+	padding:3px 10px 3px 15px;
+}
+
+.keyword{
+	border:1px solid gray;
+	border-right:none;
+	height:30px;
+	width:350px;
+	box-sizing: border-box;
+	padding:3px;
+}
+
+.search_button{
+	border:1px solid gray;
+	border-radius:0px 15px 15px 0px;
+	height:30px;
+	box-sizing: border-box;
+	padding:3px 20px 3px 15px;
+}
